@@ -1,0 +1,8 @@
+*.env
+!.env.example
+
+.dist/
+.vscode/
+
+node_modules/
+package-lock.json
