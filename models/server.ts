@@ -16,6 +16,9 @@ export class Server {
 	@prop({ required: true })
 	public owner: string;
 
+	@prop({ required: true })
+	public ftpPassword: string;
+
 	@prop({ default: undefined })
 	public apiOwner: string;
 

@@ -12,6 +12,8 @@ const wss = new WSServer({
 });
 
 wss.on('connection', (ws: ServerSocket) => {
+	ws.setMaxListeners(60); // We may be listening to a lot of events at once at some points, it should'nt hit 60 though
+
 	ws.closeError = (data) => {
 		ws.send(JSON.stringify({ type: 'ERROR', ok: false, ...data }));
 		ws.terminate();
@@ -21,8 +23,9 @@ wss.on('connection', (ws: ServerSocket) => {
 		if (Date.now() - ws.lastPong > 5000) {
 			console.log(`[${ws.server.name}] Status updated to OFFLINE`);
 			onlineServers.delete(ws.server._id);
-			io.to(ws.server._id).emit('error', { message: 'Connection to server timed out!' });
+
 			clearInterval(ws.pinger);
+			io.to(ws.server._id).emit('error', { message: 'Connection to server timed out!' });
 			return ws.closeError({ message: 'No PONG packet recieved for over 5000ms!' });
 		}
 
@@ -67,21 +70,26 @@ wss.on('connection', (ws: ServerSocket) => {
 				server.setup = undefined;
 				await server.save();
 			}
+
+			return;
 		}
 
+		if (!ws.server) return ws.closeError({ message: 'Not authenticated.' });
+
 		if (data.type == 'CONSOLE') {
-			if (!ws.server) return ws.closeError({ message: 'Not authenticated.' });
 			io.to(ws.server._id).emit('console', data);
 		}
 
 		if (data.type == 'CONSOLE_HISTORY') {
-			if (!ws.server) return ws.closeError({ message: 'Not authenticated.' });
 			ws.emit('CONSOLE_HISTORY', { history: data.history });
 		}
 
 		if (data.type == 'FILE_DATA') {
-			if (!ws.server) return ws.closeError({ message: 'Not authenticated.' });
 			ws.emit('FILE_DATA', { file: data.file });
+		}
+
+		if (data.type == 'ALL_FILES') {
+			ws.emit('ALL_FILES', { files: data.files });
 		}
 	});
 });

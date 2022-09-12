@@ -68,6 +68,7 @@ router.post('/:server', loggedIn, async (req: Request, res) => {
 	const server = await ServerModel.create({
 		_id: req.params.server.toLowerCase().replace(' ', ''),
 		token: randomBytes(32).toString('hex'),
+		ftpPassword: randomBytes(16).toString('hex'),
 		name: minehut.server.name,
 		owner: auth.discord.id,
 		apiOwner: minehut.server.owner,
