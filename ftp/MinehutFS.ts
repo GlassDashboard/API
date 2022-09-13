@@ -34,7 +34,7 @@ export default class MinehutFileSystem extends FileSystem {
 			this.server.send(
 				JSON.stringify({
 					type: 'FETCH_FILE',
-					path: path
+					path: path.startsWith(this.prefix) ? path.substring(this.prefix.length) : path
 				})
 			);
 
@@ -49,7 +49,7 @@ export default class MinehutFileSystem extends FileSystem {
 			this.server.send(
 				JSON.stringify({
 					type: 'FETCH_ALL_FILES',
-					path: path
+					path: path.startsWith(this.prefix) ? path.substring(this.prefix.length) : path
 				})
 			);
 
@@ -137,6 +137,7 @@ export default class MinehutFileSystem extends FileSystem {
 	async chdir(path: string = '.'): Promise<string> {
 		this.cwd = this._resolvePath(path).replace('\\', '/');
 		if (this.cwd == '\\') this.cwd = '/';
+		console.log('CHDIR ', this.cwd);
 		if (this.cwd == '/') this.cwd == this.prefix;
 		return this.cwd;
 	}
