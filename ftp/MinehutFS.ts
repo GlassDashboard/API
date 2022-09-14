@@ -103,7 +103,6 @@ export default class MinehutFileSystem extends FileSystem {
 	// out: Stat
 	async get(fileName: string): Promise<any> {
 		const fsPath = this._resolvePath(fileName).replace('\\', '/');
-		console.log('GET ', fsPath);
 
 		return new Promise(async (resolve, reject) => {
 			const data = await this.getFileData(fsPath);
@@ -113,14 +112,10 @@ export default class MinehutFileSystem extends FileSystem {
 			}
 
 			const files = await this.toJSON(await this.getAllFiles(fsPath));
-			console.log(files[0]);
-
 			vol.fromJSON(files, this.prefix);
-			console.log('Loaded into mem');
 
 			const stats = await fs.promises.stat(fsPath);
 			stats['name'] = data.name;
-			console.log('Stats ready');
 
 			resolve(stats);
 		});
@@ -130,14 +125,12 @@ export default class MinehutFileSystem extends FileSystem {
 	// out: [Stat]
 	async list(path: string = '.'): Promise<any> {
 		var fsPath = this._resolvePath(path).replace('\\', '/');
-		console.log('LIST ', fsPath);
 		return await this.toStats(fsPath);
 	}
 
 	async chdir(path: string = '.'): Promise<string> {
 		this.cwd = this._resolvePath(path).replace('\\', '/');
 		if (this.cwd == '\\') this.cwd = '/';
-		console.log('CHDIR ', this.cwd);
 		if (this.cwd == '/') this.cwd == this.prefix;
 		return this.cwd;
 	}
