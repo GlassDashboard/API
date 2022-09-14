@@ -3,19 +3,24 @@ import { fs, vol } from 'memfs';
 import { ServerSocket } from '../servers/socket';
 import { isAbsolute, normalize, join } from 'path';
 import uuid from 'uuid';
+import { User } from '../models/user';
 
 export default class MinehutFileSystem extends FileSystem {
 	server: ServerSocket;
+	user: User;
 	connection: FtpConnection;
-	cwd: string;
 
+	cwd: string;
 	prefix: string;
 
-	constructor(server: ServerSocket, connection: FtpConnection) {
+	constructor(server: ServerSocket, user: User, connection: FtpConnection) {
 		super(connection, { root: '/' + server.server.name, cwd: '/' + server.server.name });
 		this.prefix = '/' + server.server.name;
+
 		this.connection = connection;
+		this.user = user;
 		this.server = server;
+
 		this.cwd = this.prefix;
 	}
 

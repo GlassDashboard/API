@@ -16,9 +16,6 @@ export class Server {
 	@prop({ required: true })
 	public owner: string;
 
-	@prop({ required: true })
-	public ftpPassword: string;
-
 	@prop({ default: undefined })
 	public apiOwner: string;
 
@@ -40,15 +37,19 @@ export class Server {
 	@prop({ default: undefined })
 	public setup?: boolean;
 
+	@prop({ required: true, default: [] })
+	public ftp: FTPDetails[];
+
 	// Methods
 	public hasPermission(user: string, permission: ServerPermission): boolean {
 		const permissions = this.getPermissions(user);
-		if (permissions == -1 || (permission & permissions) != 0) return true;
-		return false;
+		if (permissions == null) return false;
+		return permissions == -1 || (permission & permissions) != 0;
 	}
 
-	public getPermissions(user: string): number {
-		return this.users.find((u) => u._id === user)?.permissions ?? -1;
+	public getPermissions(user: string): number | null {
+		if (this.owner == user) return -1;
+		return this.users.find((u) => u._id === user)?.permissions ?? null;
 	}
 
 	public toJson(): any {
@@ -64,6 +65,17 @@ class Subuser {
 	public permissions: number;
 }
 
+class FTPDetails {
+	@prop({ required: true })
+	public identifier: string;
+
+	@prop({ required: true })
+	public password: string;
+
+	@prop({ required: true })
+	public assignee: string;
+}
+
 export enum ServerPermission {
 	// Default Permissions
 	VIEW_CONSOLE = 1 << 0,
@@ -75,11 +87,12 @@ export enum ServerPermission {
 	VIEW_PERFORMANCE = 1 << 6,
 	VIEW_PLUGINS = 1 << 7,
 	MANAGE_PLUGINS = 1 << 8,
+	FTP_ACCESS = 1 << 9,
 
 	// Server Permissions
-	MANAGE_SUBUSERS = 1 << 9,
-	MANAGE_INTEGRATIONS = 1 << 10,
-	MANAGE_SERVER = 1 << 11
+	MANAGE_SUBUSERS = 1 << 10,
+	MANAGE_INTEGRATIONS = 1 << 11,
+	MANAGE_SERVER = 1 << 12
 }
 
 // Export Models
