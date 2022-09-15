@@ -73,7 +73,8 @@ router.post('/:server', loggedIn, async (req: Request, res) => {
 		owner: auth.discord.id,
 		apiOwner: minehut.server.owner,
 		apiID: minehut.server._id,
-		setup: true
+		setup: true,
+		createdAt: Date.now()
 	});
 
 	await server.save();

@@ -40,6 +40,9 @@ export class Server {
 	@prop({ required: true, default: [] })
 	public ftp: FTPDetails[];
 
+	@prop({ required: true })
+	public createdAt: number;
+
 	// Methods
 	public hasPermission(user: string, permission: ServerPermission): boolean {
 		const permissions = this.getPermissions(user);
