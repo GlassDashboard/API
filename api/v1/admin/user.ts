@@ -24,11 +24,16 @@ router.get('/:user', async (req, res) => {
 		]
 	});
 
+	const invites = await InviteModel.find({
+		inviter: data._id
+	});
+
 	return res.json({
 		error: false,
 		message: '',
 		user: data.toJson(),
-		servers: servers.map((s) => s.toJson())
+		servers: servers.map((s) => s.toJson()),
+		invites: invites.map((i) => i.toJson())
 	});
 });
 
