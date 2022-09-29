@@ -13,15 +13,11 @@ const DISCORD_AUTH = `https://discord.com/api/oauth2/authorize?client_id=${proce
 router.get('/data', loggedIn, async (req, res) => {
 	const auth = req as AuthenticatedRequest;
 
-	const cache = getCached(auth.discord.id);
-	if (cache) return res.json(cache);
-
 	var data: User | null = await UserModel.findById(auth.discord.id);
 	if (!data) data = await User.create(auth.discord);
 
 	const user = { ...data.toJson(), ...auth.discord, avatar: `https://cdn.discordapp.com/avatars/${auth.discord.id}/${auth.discord.avatar}.png` };
 
-	setCached(auth.discord.id, user, 600);
 	res.json(user);
 });
 

@@ -1,6 +1,7 @@
 import { getModelForClass, modelOptions, prop, Severity } from '@typegoose/typegoose';
 
 export type HostLocation = 'MINEHUT';
+export type ServerType = 'SPIGOT' | 'PAPER' | 'FORGE' | 'FABRIC' | 'BUNGEECORD' | 'VELOCITY';
 
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Server {
@@ -41,7 +42,13 @@ export class Server {
 	public ftp: FTPDetails[];
 
 	@prop({ required: true })
+	public serverType: ServerType;
+
+	@prop({ required: true })
 	public createdAt: number;
+
+	@prop({ default: undefined })
+	public lastOnline: number;
 
 	// Methods
 	public hasPermission(user: string, permission: ServerPermission): boolean {

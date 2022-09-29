@@ -3,6 +3,7 @@ import { Server, ServerModel } from '../models/server';
 import { unsign } from 'cookie-signature';
 import { getCached, setCached } from './cache';
 import fetch from 'node-fetch';
+import { UserModel } from '../models/user';
 
 export async function loggedIn(req, res, next) {
 	// Get authorization header
@@ -30,12 +31,13 @@ export async function loggedIn(req, res, next) {
 		}
 	}).then((res) => res.json());
 
-	if (data.error) return res.status(401).json({ error: true, message: 'You are not logged in to discord!' });
+	if (data.error || data.code === 0) return res.status(401).json({ error: true, message: 'You are not logged in to discord!' });
 	if (!data.verified) return res.status(401).json({ error: true, message: 'Verify your email on discord!' });
 
 	// Attach data
 	setCached(token, data, 600);
 	(req as AuthenticatedRequest).discord = data;
+
 	next();
 }
 
@@ -51,6 +53,18 @@ export function requiresPermission(permission) {
 			next();
 		});
 	};
+}
+
+export function adminEndpoint(req, res, next) {
+	loggedIn(req, res, async () => {
+		const auth = req as AuthenticatedRequest;
+		const data = await UserModel.findById(auth.discord.id);
+		if (!data) return res.status(404).json({ error: true, message: 'You are not authenticated!' });
+
+		if (!data.admin) return res.status(403).json({ error: true, message: 'You do not have permission to do that.' });
+
+		next();
+	});
 }
 
 export async function getServers(account) {
@@ -83,5 +97,8 @@ export interface DiscordData {
 	public_flags: number;
 	username: string;
 	verified: boolean;
+
 	error?: boolean;
+	code?: number;
+	message?: string;
 }
