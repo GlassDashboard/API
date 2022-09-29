@@ -28,12 +28,17 @@ router.get('/:user', async (req, res) => {
 		inviter: data._id
 	});
 
+	const usersInvited = await InviteModel.countDocuments({
+		inviter: data._id
+	});
+
 	return res.json({
 		error: false,
 		message: '',
 		user: data.toJson(),
 		servers: servers.map((s) => s.toJson()),
-		invites: invites.map((i) => i.toJson())
+		invites: invites.map((i) => i.toJson()),
+		invited: usersInvited
 	});
 });
 
