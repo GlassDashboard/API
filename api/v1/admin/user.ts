@@ -17,7 +17,7 @@ router.get('/:user', async (req, res) => {
 				owner: data._id
 			},
 			{
-				members: {
+				users: {
 					$in: [data._id]
 				}
 			}
