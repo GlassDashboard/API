@@ -24,6 +24,9 @@ export class User {
 	@prop({ default: undefined })
 	public invite: string;
 
+	@prop({ default: undefined })
+	public suspended?: string;
+
 	// Methods
 	public getAvatarURL(): string {
 		return `https://cdn.discordapp.com/avatars/${this._id}/${this.avatar}.png`;

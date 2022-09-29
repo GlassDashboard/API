@@ -14,6 +14,8 @@ router.get('/confirm/:invite', loggedIn, ratelimit(3, '10s'), ratelimit(50, '1m'
 	const data = await InviteModel.findById(invite);
 	if (!data) return res.status(404).json({ error: true, message: 'Invite not found.' });
 
+	if (data.invalid) return res.status(400).json({ error: true, message: 'This invite was invalidated by an administrator.' });
+
 	if (data.uses === 0) return res.status(400).json({ error: true, message: 'Invite has no uses left.' });
 
 	// Set the user as invited

@@ -18,6 +18,9 @@ export class Invite {
 	@prop({ required: true })
 	public total: number;
 
+	@prop({ default: undefined })
+	public invalid?: boolean;
+
 	// Methods
 	public toJson(): any {
 		return JSON.parse(JSON.stringify(this));
