@@ -1,7 +1,7 @@
 import { getModelForClass, modelOptions, prop, Severity } from '@typegoose/typegoose';
 
 export type HostLocation = 'MINEHUT';
-export type ServerType = 'SPIGOT' | 'PAPER' | 'FORGE' | 'FABRIC' | 'BUNGEECORD' | 'VELOCITY';
+export type ServerType = 'SPIGOT' | 'PAPER' | 'FORGE' | 'FABRIC' | 'BUNGEECORD' | 'VELOCITY' | 'UNKNOWN';
 
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class Server {
@@ -41,7 +41,7 @@ export class Server {
 	@prop({ required: true, default: [] })
 	public ftp: FTPDetails[];
 
-	@prop({ required: true })
+	@prop({ required: true, default: 'UNKNOWN' })
 	public serverType: ServerType;
 
 	@prop({ required: true })

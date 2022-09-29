@@ -41,6 +41,7 @@ export class User {
 			_id: discord.id,
 			tag: discord.username + '#' + discord.discriminator,
 			avatar: discord.avatar,
+			flags: ['beta_tester'],
 			createdAt: Date.now()
 		});
 		await user.save();
