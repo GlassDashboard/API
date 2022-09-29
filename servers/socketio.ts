@@ -57,14 +57,7 @@ export function connectSocketio() {
 			});
 
 			// Notify user if admin
-			if (user.admin == true) {
-				socket.emit('toast', {
-					message: 'You are logged in as an admin!',
-					type: 'success'
-				});
-
-				socket.data.admin = true;
-			}
+			if (user.admin == true) socket.data.admin = true;
 
 			// Let user know they are logged in
 			socket.emit('authenticated', { id: data.id });
