@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import { UserModel } from '../models/user';
 import { getServers } from '../middleware/authentication';
 import c from 'ansi-colors';
+import { unsign } from 'cookie-signature';
 
 export var io;
 
@@ -23,10 +24,20 @@ export function connectSocketio() {
 			return socket.rooms.has(server.toLowerCase()) || socket.data.admin;
 		};
 
-		socket.on('authenticate', async ({ token }) => {
+		socket.on('authenticate', async (info) => {
+			const rawToken = info['token'];
+			if (!rawToken) return socket.emit('error', { message: 'No token provided.' });
+
+			const token = decodeURIComponent(rawToken);
+
+			if (!token.includes('.')) return socket.emit('error', { message: 'Invalid token. Please log out and back in.' });
+
+			const signed = unsign(token, process.env.COOKIE_SECRET || 'hello world');
+			if (!signed) return socket.emit('error', { message: 'Failed to authenticate!' });
+
 			const data = await fetch(`https://discordapp.com/api/users/@me`, {
 				headers: {
-					Authorization: `Bearer ${token}`
+					Authorization: `Bearer ${token.split('.')[0]}`
 				}
 			}).then((res) => res.json());
 
