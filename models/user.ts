@@ -1,6 +1,8 @@
-import { getModelForClass, modelOptions, prop, Severity } from '@typegoose/typegoose';
+import { getModelForClass, modelOptions, plugin, prop, Severity } from '@typegoose/typegoose';
 import { DiscordData } from '../middleware/authentication';
+import { AutoIncrementSimple } from '@typegoose/auto-increment';
 
+@plugin(AutoIncrementSimple, [{ field: 'join' }])
 @modelOptions({ options: { allowMixed: Severity.ALLOW } })
 export class User {
 	@prop({ _id: true })
@@ -14,6 +16,9 @@ export class User {
 
 	@prop({ required: true })
 	public createdAt: number;
+
+	@prop({ required: true })
+	public join: number;
 
 	@prop({ default: undefined })
 	public admin?: boolean;

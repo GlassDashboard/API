@@ -3,6 +3,7 @@ export const router = Router();
 
 import { ServerModel, ServerPermission } from '../../../models/server';
 import { AuthenticatedRequest, getServers, loggedIn, requiresPermission, ServerRequest } from '../../../middleware/authentication';
+import { onlineServers } from '../../../servers/socket';
 import fetch from 'node-fetch';
 import { randomBytes } from 'crypto';
 
@@ -37,7 +38,8 @@ router.get('/', loggedIn, async (req: Request, res) => {
 				...s.toJson(),
 				role: s.owner == auth.discord.id ? 'Owner' : 'Member',
 				permissions: s.getPermissions(auth.discord.id),
-				token: s.hasPermission(auth.discord.id, ServerPermission.MANAGE_SERVER) ? s.token : undefined
+				token: s.hasPermission(auth.discord.id, ServerPermission.MANAGE_SERVER) ? s.token : undefined,
+				status: onlineServers.has(s._id) ? 'online' : 'offline'
 			};
 		})
 	});

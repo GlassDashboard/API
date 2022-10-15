@@ -3,16 +3,6 @@ import { AuthenticatedRequest } from 'middleware/authentication';
 import { Invite, InviteModel } from '../../../models/invite';
 export const router = Router();
 
-// All Invites
-router.get('/all', async (req, res) => {
-	const invites = await InviteModel.find({});
-	res.json({
-		error: false,
-		message: '',
-		invites: invites.map((i) => i.toJson())
-	});
-});
-
 // Invite Specific
 router.post('/', async (req: Request, res) => {
 	const auth = req as AuthenticatedRequest;

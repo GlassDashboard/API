@@ -76,7 +76,7 @@ export default class MinehutFileSystem extends FileSystem {
 		files.reduce((_, file) => {
 			if (file.name.startsWith('/__resources')) return map;
 			if (file.directory) map[this.prefix + file.name] = [];
-			else map[this.prefix + file.name.replace('\\', '/')] = 'No Content Saved';
+			else map[this.prefix + file.name.replace(/\\/g, '/')] = 'No Content Saved';
 			return map;
 		});
 
@@ -84,7 +84,7 @@ export default class MinehutFileSystem extends FileSystem {
 	}
 
 	async toStats(path: string): Promise<any> {
-		const fsPath = this._resolvePath(path).replace('\\', '/');
+		const fsPath = this._resolvePath(path).replace(/\\/g, '/');
 
 		return new Promise(async (resolve, _) => {
 			const files = await this.getAllFiles(fsPath);
@@ -94,7 +94,7 @@ export default class MinehutFileSystem extends FileSystem {
 
 			const stats = await Promise.all(
 				names.map(async (file) => {
-					const stat = await fs.promises.stat(join(path, file).replace('\\', '/'));
+					const stat = await fs.promises.stat(join(path, file).replace(/\\/g, '/'));
 					stat['name'] = file;
 					return stat;
 				})
@@ -107,12 +107,12 @@ export default class MinehutFileSystem extends FileSystem {
 	// in: path (file/directory)
 	// out: Stat
 	async get(fileName: string): Promise<any> {
-		const fsPath = this._resolvePath(fileName).replace('\\', '/');
+		const fsPath = this._resolvePath(fileName).replace(/\\/g, '/');
 
 		return new Promise(async (resolve, reject) => {
 			const data = await this.getFileData(fsPath);
 			if (data.error) {
-				this.connection.reply(550, `[MHWeb] ${data.error}`);
+				this.connection.reply(550, `[Glass] ${data.error}`);
 				return reject(data.error);
 			}
 
@@ -129,7 +129,7 @@ export default class MinehutFileSystem extends FileSystem {
 	// in: path (dir)
 	// out: [Stat]
 	async list(path: string = '.'): Promise<any> {
-		var fsPath = this._resolvePath(path).replace('\\', '/');
+		var fsPath = this._resolvePath(path).replace(/\\/g, '/');
 		return await this.toStats(fsPath);
 	}
 
@@ -137,6 +137,7 @@ export default class MinehutFileSystem extends FileSystem {
 		this.cwd = this._resolvePath(path).replace('\\', '/');
 		if (this.cwd == '\\') this.cwd = '/';
 		if (this.cwd == '/') this.cwd == this.prefix;
+		this.cwd = this.cwd.replace(/\\/g, '/'); // no idea why, but I need this twice, cant even tell you why
 		return this.cwd;
 	}
 
@@ -159,7 +160,7 @@ export default class MinehutFileSystem extends FileSystem {
 	}
 
 	async chmod(path: string, mode: string): Promise<any> {
-		this.connection.reply(550, `[MHWeb] You are not permitted to do this!`);
+		this.connection.reply(550, `[Glass] You are not permitted to do this!`);
 	}
 
 	getUniqueName(fileName: string): string {

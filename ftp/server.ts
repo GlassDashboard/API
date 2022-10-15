@@ -7,20 +7,20 @@ import MinehutFileSystem from './MinehutFS';
 const server = new ftpd.FtpSrv({
 	url: 'ftp://' + process.env.FTP_BIND + ':' + process.env.FTP_PORT,
 	anonymous: false,
-	greeting: [' ', 'MHWeb', 'Welcome to MHWeb FTP Server', 'This feature is still in development, so expect a few bugs.', ' ']
+	greeting: [' ', 'Glass', 'Welcome to Glass FTP Server', 'This feature is still in development, so expect a few bugs.', ' ']
 });
 
 server.on('login', async ({ connection, username, password }, resolve, reject: any) => {
 	const connectionDetails = username.split('.');
 	if (connectionDetails.length != 2) {
-		connection.reply(400, '[MHWeb] Invalid connection details, double check your username and password');
+		connection.reply(400, '[Glass] Invalid connection details, double check your username and password');
 		return reject('Invalid connection details');
 	}
 
 	// Check if server is online
 	const server: ServerSocket | undefined = onlineServers.get(connectionDetails[0].toLowerCase());
 	if (server == null) {
-		connection.reply(404, '[MHWeb] Server is not currently online, try starting the server up and make sure it is connected properly');
+		connection.reply(404, '[Glass] Server is not currently online, try starting the server up and make sure it is connected properly');
 		return reject('Server is not currently online');
 	}
 
